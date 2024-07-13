@@ -1,0 +1,20 @@
+{
+  "app": {
+    "title": "Benh_Vien_Tri_Anh",
+    "headerTitle": "",
+    "headerColor": "#1843EF",
+    "textColor": "white",
+    "textAlign": "left",
+    "statusBarColor": "#1843EF",
+    "leftButton": "back",
+    "statusBar": "transparent",
+    "actionBarHidden": true,
+    "hideAndroidBottomNavigationBar": false,
+    "hideIOSSafeAreaBottom": false
+  },
+  "debug": false,
+  "pages": [],
+  "listCSS": [],
+  "listSyncJS": [],
+  "listAsyncJS": []
+}

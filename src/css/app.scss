@@ -1,0 +1,37 @@
+.page {
+  padding: 16px 16px 96px 16px;
+}
+
+.section-container {
+  padding: 16px;
+  background: #ffffff;
+  margin-top: 4.4rem;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.zaui-list-item {
+  cursor: pointer;
+}
+.set-height {
+  background: linear-gradient(90deg, #dc1f18 0%, #f8954f 100%);
+}
+
+.setBanner {
+  background: linear-gradient(90deg, #dc1f18 0%, #f8954f 100%);
+}
+
+.set-top {
+  margin-top: 5rem;
+}
+.set-doctor {
+  margin-top: 4rem;
+}
+.disscorllbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer, Edge */
+}
+
+.disscorllbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

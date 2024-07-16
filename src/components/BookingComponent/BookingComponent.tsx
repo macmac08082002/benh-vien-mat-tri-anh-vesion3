@@ -1,230 +1,193 @@
-import {
-  AiOutlineUser,
-  AiOutlinePhone,
-  AiOutlineMail,
-  AiOutlineCalendar,
-  AiOutlineFileText,
-} from "react-icons/ai";
-import { useRecoilValue } from "recoil";
-import { userState } from "state";
-import { Avatar, Box, Text } from "zmp-ui";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { FaUser, FaPhone, FaEnvelope, FaRegCommentDots } from "react-icons/fa";
+import "../../css/custom.scss";
+import GetToken from "components/GetPhoneNumber/GetPhoneNumber";
+import { getUserInfo } from "zmp-sdk/apis";
 
-const ImportForm = () => {
-  const { userInfo } = useRecoilValue(userState);
-  const [formData, setFormData] = useState({
-    customer_name: "userInfo.name",
-    customer_phone: "",
-    email: "",
-    address: "947 Phan Văn Trị",
-    customer_birth_year: "2002",
-    id_province: 79,
-    customer_gender: "0",
-    customer_type: "1",
-    id_district: 762,
-    id_ward: 26815,
-    store_code: "401",
-    order_status: 1,
-    id_reason: 6,
-    delivery_to: "947 Phan Văn Trị",
-    order_date: "",
-    order_note: "",
-    cart_list: [
-      {
-        product_code: "NG001",
-        quantity: "4",
-        note: "Khám lasik",
-      },
-    ],
-  });
-
-  const [message, setMessage] = useState("");
+const ContactForm = ({ onClose }) => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [serviceNeeded, setServiceNeeded] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [showGetToken, setShowGetToken] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const checkFormValidity = () => {
+    return userName && phoneNumber && email && serviceNeeded && !phoneError;
   };
 
-  const handleSubmit = async (e) => {
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length >= 10 && value.length <= 11) {
+      setPhoneNumber(value);
+      setPhoneError("");
+    } else {
+      setPhoneNumber(value);
+      setPhoneError("Số điện thoại không hợp lệ");
+    }
+  };
+
+  const resetForm = () => {
+    setPhoneNumber("");
+    setUserName("");
+    setEmail("");
+    setServiceNeeded("");
+    setPhoneError("");
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    for (const key in formData) {
-      if (formData[key] === "") {
-        setMessage("Vui lòng điền đầy đủ thông tin!");
-        return;
+    const isValid = checkFormValidity();
+
+    if (isValid) {
+      console.log("Form submitted successfully!");
+      setModalMessage(
+        "Bạn đã đăng ký thành công!, chúng tôi sẽ liên lạc lại vào thời gian sớm nhất"
+      );
+      setIsSuccess(true);
+    } else {
+      console.log("Please fill in all required fields correctly.");
+      setModalMessage("Vui lòng nhập đầy đủ và chính xác thông tin.");
+      setIsSuccess(false);
+    }
+    setShowModal(true);
+  };
+
+  const handleUserNameClick = async () => {
+    if (!userName) {
+      try {
+        const { userInfo } = await getUserInfo({});
+        setUserName(userInfo.name);
+      } catch (error) {
+        console.error("Error getting user info:", error);
       }
     }
-
-    try {
-      const response = await fetch("https://miniapp.talking.vn/api/post-data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Có lỗi xảy ra khi gửi dữ liệu!");
-      }
-
-      setMessage("Đăng ký thành công!, vui lòng đến đúng lịch hẹn");
-      setShowModal(true);
-
-      setFormData({
-        customer_name: "",
-        customer_phone: "",
-        email: "",
-        address: "947 Phan Văn Trị",
-        customer_birth_year: "2002",
-        id_province: 79,
-        customer_gender: "0",
-        customer_type: "1",
-        id_district: 762,
-        id_ward: 26815,
-        store_code: "401",
-        order_status: 1,
-        id_reason: 6,
-        delivery_to: "947 Phan Văn Trị",
-        order_date: "",
-        order_note: "",
-        cart_list: [
-          {
-            product_code: "NG001",
-            quantity: "4",
-            note: "Khám lasik",
-          },
-        ],
-      });
-    } catch (error) {
-      setMessage("Đã xảy ra lỗi khi đăng ký!");
-    }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
-  const handlePhoneNumber = (phoneNumber) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      customer_phone: phoneNumber,
-    }));
-  };
+  const Modal = ({ message, isSuccess, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+        <p
+          className={`text-center text-lg mb-4 ${
+            isSuccess ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {message}
+        </p>
+        <button
+          onClick={() => {
+            onClose();
+            if (isSuccess) {
+              resetForm();
+            }
+          }}
+          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4">
-      <form
-        className="bg-white p-8 shadow-lg rounded-lg"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Đăng Ký Khám Bệnh
-        </h2>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Họ và tên:</label>
-          <div className="flex h-9 items-center border rounded-md p-2">
-            <AiOutlineUser className="text-gray-400 mr-2" />
+    <div
+      className="set-form rounded-3xl w-full max-w-md mt-6  text-white"
+      style={{ background: "linear-gradient(45deg, #dc1f18 0%, #f8954f 90%)" }}
+    >
+      <h2 className="text-2xl text-white ml-9 text-center py-2 w-[80%] flex justify-center mb-6 mt-6 font-bold">
+        Để lại thông tin tư vấn
+      </h2>
+      {showGetToken && (
+        <GetToken
+          onPhoneNumberReceived={(phone) => {
+            setPhoneNumber(phone);
+            setShowGetToken(false);
+            setPhoneError("");
+          }}
+        />
+      )}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4 flex justify-center">
+          <div className="flex items-center border border-gray-300 rounded-lg bg-white w-[90%] text-gray-700">
+            <FaUser className="text-gray-400 ml-2" />
             <input
               type="text"
-              name="customer_name"
-              value={userInfo.name}
-              onChange={handleChange}
-              className="w-full focus:outline-none"
+              className="p-2 ml-2 w-full border-none focus:ring-0"
+              placeholder="Tên của bạn"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              onClick={handleUserNameClick}
             />
           </div>
         </div>
-
-        <div>
-          <div className="mb-4 ">
-            <label className="block text-gray-700 mb-2">Số điện thoại:</label>
-            <div className="flex h-9 items-center border rounded-md p-2">
-              <AiOutlinePhone className="text-gray-400 mr-2" />
-              <input
-                type="text"
-                name="customer_phone"
-                value={formData.customer_phone}
-                onChange={handleChange}
-                className="w-full focus:outline-none"
-              />
-            </div>
+        <div className="mb-4 flex justify-center flex-col items-center">
+          <div className="flex items-center w-[90%] border border-gray-300 rounded-lg bg-white text-gray-700">
+            <FaPhone className="text-gray-400 ml-2" />
+            <input
+              type="tel"
+              className="w-full p-2 ml-2 border-none focus:ring-0"
+              placeholder="Số điện thoại của bạn"
+              value={phoneNumber}
+              onChange={handlePhoneChange}
+              onClick={() => !phoneNumber && setShowGetToken(true)}
+            />
           </div>
+          {phoneError && (
+            <p className="text-white text-sm mt-1">{phoneError}</p>
+          )}
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Email:</label>
-          <div className="flex items-center h-9 border rounded-md p-2">
-            <AiOutlineMail className="text-gray-400 mr-2" />
+        <div className="mb-4 flex justify-center">
+          <div className="flex items-center border border-gray-300 w-[90%] rounded-lg bg-white text-gray-700">
+            <FaEnvelope className="text-gray-400 ml-2" />
             <input
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full focus:outline-none"
+              className="w-full p-2 ml-2 border-none focus:ring-0"
+              placeholder="Email của bạn"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Ngày đặt hẹn:</label>
-          <div className="flex items-center border rounded-md p-2">
-            <AiOutlineCalendar className="text-gray-400 mr-2" />
-            <input
-              type="datetime-local"
-              name="order_date"
-              value={formData.order_date}
-              onChange={handleChange}
-              className="w-full focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">
-            Mô tả triệu chứng / Lý do khám:
-          </label>
-          <div className="flex items-start border rounded-md p-2">
-            <AiOutlineFileText className="text-gray-400 mr-2 mt-1" />
+        <div className="mb-4 flex justify-center">
+          <div className="flex items-start border w-[90%] border-gray-300 rounded-lg bg-white text-gray-700">
+            <FaRegCommentDots className="text-gray-400 ml-2 mt-2" />
             <textarea
-              name="order_note"
-              onChange={handleChange}
-              value={formData.order_note}
-              className="w-full focus:outline-none"
-              rows={4}
-            />
+              className="w-full p-2 ml-2 border-none focus:ring-0"
+              placeholder="Dịch vụ cần tư vấn"
+              rows="4"
+              value={serviceNeeded}
+              onChange={(e) => setServiceNeeded(e.target.value)}
+            ></textarea>
           </div>
         </div>
-
-        <div className="text-center">
+        <div className="flex justify-center mb-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="mr-2 px-16 py-4 bg-gray-300 text-gray-700 rounded-2xl hover:bg-gray-400"
+          >
+            Đóng
+          </button>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            className="px-16 py-4 bg-blue-500 text-white rounded-2xl hover:bg-blue-600"
           >
-            Đăng Ký
+            Gửi
           </button>
         </div>
-
-        {message && (
-          <div className="mt-4 text-center text-green-500">{message}</div>
-        )}
       </form>
-
-      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <p className="text-lg">{message}</p>
-            <button
-              onClick={closeModal}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
+        <Modal
+          message={modalMessage}
+          isSuccess={isSuccess}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </div>
   );
 };
 
-export default ImportForm;
+export default ContactForm;

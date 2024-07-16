@@ -1,10 +1,11 @@
+import LocationList from "components/LocationComponent/LocationList";
 import ProifileComponent from "components/ProfileComponent/ProfileComponent";
 import React from "react";
 
 const UserPage = () => {
   return (
     <div>
-      <ProifileComponent />{" "}
+      <ProifileComponent />
     </div>
   );
 };

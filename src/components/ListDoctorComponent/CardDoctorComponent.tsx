@@ -24,7 +24,7 @@ const DoctorCardComponent: React.FC<DoctorCardComponentProps> = ({
     >
       <div className="flex justify-center w-full">
         <img
-          className="h-32 mt-1 object-cover"
+          className="h-32 mt-1  object-cover"
           src={doctor.image}
           alt={doctor.name}
         />

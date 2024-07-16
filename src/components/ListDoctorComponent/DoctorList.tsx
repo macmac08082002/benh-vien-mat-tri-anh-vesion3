@@ -54,7 +54,7 @@ const DoctorList: React.FC = () => {
   ];
 
   return (
-    <div className="set-doctor mt-6">
+    <div>
       <span className="whitespace-nowrap text-sm  font-semibold">
         <p className="flex items-center font-boild">
           <span className="whitespace-nowrap ">

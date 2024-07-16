@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { BiHome, BiCalendar, BiUser } from "react-icons/bi";
+import { BiHome, BiUser } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { FaNewspaper } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 import { openPhone } from "zmp-sdk/apis";
+import { FaLocationDot } from "react-icons/fa6";
 
-type Tab = "home" | "booking" | "consultation" | "account";
+type Tab = "home" | "booking" | "consultation" | "location" | "account";
 
 const BottomNavigationComponent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -19,6 +20,7 @@ const BottomNavigationComponent: React.FC = () => {
       console.log(error);
     }
   };
+
   return (
     <div
       className="fixed bottom-0 left-0 w-full p-1"
@@ -57,6 +59,22 @@ const BottomNavigationComponent: React.FC = () => {
           >
             <FaNewspaper size={20} />
             <span className="mt-1 text-xs no-underline">Tin tức</span>
+          </button>
+        </Link>
+        <Link
+          to="/location"
+          onClick={() => setActiveTab("location")}
+          style={{ textDecoration: "none" }}
+        >
+          <button
+            className={`flex flex-col items-center text-white ${
+              activeTab === "location"
+                ? "font-bold bg-gradient-to-r from-green-400 rounded-md"
+                : ""
+            }`}
+          >
+            <FaLocationDot size={20} />
+            <span className="mt-1 text-xs no-underline">Địa điểm</span>
           </button>
         </Link>
         <div
